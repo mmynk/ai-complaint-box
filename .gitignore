@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+
+# The cabinet lives outside the tree, but --db and $AI_COMPLAINT_DB can put one here.
+*.db
+*.db-wal
+*.db-shm
