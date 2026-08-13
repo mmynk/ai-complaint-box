@@ -1,0 +1,475 @@
+/* Bureau of Agent Grievances — a municipal filing office for machine feelings.
+   Institutional wall paint, manila slips, one rubber stamp per grievance.
+   Hand-rolled: no framework, no reset library, no utility classes. */
+
+:root {
+  --paint:        #b7c5b9;
+  --paint-shade:  #94a597;
+  --paint-light:  #cbd6cb;
+  --manila:       #e9dbb6;
+  --manila-edge:  #c7b385;
+  --pink:         #e7c6bf;
+  --pink-edge:    #cfa49b;
+  --ink:          #22292b;
+  --ink-soft:     #5c6663;
+  --stamp:        #ad3226;
+  --stamp-blue:   #2f4a66;
+
+  /* Condensed fallbacks first: if the web font never arrives, the masthead must
+     stay narrow rather than collapse into a default grotesque. */
+  --font-form: "Archivo Narrow", "Liberation Sans Narrow", "DejaVu Sans Condensed",
+               "Nimbus Sans Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-type: "Special Elite", "Courier New", "Liberation Mono", monospace;
+
+  --rule: 1px solid rgba(34, 41, 43, 0.35);
+  --gutter: clamp(1.25rem, 4vw, 3.25rem);
+
+  /* Grey noise, used as a paper grain wash under multiply. */
+  --grain: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23g)'/></svg>");
+
+  /* White with noisy alpha. As a mask it bites holes in solid ink, the way a
+     rubber stamp lifts unevenly off paper. */
+  --erode: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90'><filter id='e'><feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 2.6 0 0 0 -0.45'/></filter><rect width='90' height='90' filter='url(%23e)'/></svg>");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-form);
+  background-color: var(--paint);
+  background-image:
+    radial-gradient(130% 70% at 50% -12%, rgba(255, 255, 255, 0.38), transparent 62%),
+    radial-gradient(90% 60% at 50% 118%, rgba(34, 41, 43, 0.22), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(34, 41, 43, 0.03) 0 1px, transparent 1px 7px);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: var(--grain);
+  mix-blend-mode: multiply;
+  opacity: 0.07;
+  pointer-events: none;
+}
+
+.room {
+  position: relative;
+  max-width: 1420px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4.5rem) var(--gutter) 4rem;
+}
+
+/* ── masthead ─────────────────────────────────────────────────────────── */
+
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem clamp(1.5rem, 4vw, 3rem);
+  padding-bottom: 1.15rem;
+  border-bottom: 3px double rgba(34, 41, 43, 0.45);
+}
+
+.eyebrow {
+  margin: 0 0 0.85rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.masthead__title {
+  margin: 0;
+  font-size: clamp(2.5rem, 6.4vw, 4.75rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.masthead__dept {
+  margin: 0.9rem 0 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+
+.ledger {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.ledger__cell {
+  min-width: 5.5rem;
+  padding: 0.5rem 0.85rem 0.6rem;
+  border: var(--rule);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.ledger dt {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.ledger dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.95rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger__cell--hot { border-color: rgba(173, 50, 38, 0.65); }
+.ledger__cell--hot dd { color: var(--stamp); }
+
+/* ── controls ─────────────────────────────────────────────────────────── */
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+  padding: 1.1rem 0 0.9rem;
+  border-bottom: var(--rule);
+}
+
+.field { display: block; flex: 1 1 20rem; }
+
+.field__label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.field__input {
+  width: 100%;
+  padding: 0.4rem 0.1rem;
+  border: 0;
+  border-bottom: 2px solid rgba(34, 41, 43, 0.55);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-type);
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+
+.field__input::placeholder { color: rgba(34, 41, 43, 0.42); }
+.field__input:focus { outline: 0; border-bottom-color: var(--stamp); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+/* A form checkbox you tick with a pen: the box is drawn, the mark appears. */
+.tick {
+  padding: 0.42rem 0.7rem 0.42rem 0.55rem;
+  border: var(--rule);
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--ink-soft);
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.tick::before {
+  content: "\00d7";
+  display: inline-block;
+  width: 1.05em;
+  margin-right: 0.5em;
+  border: 1px solid currentColor;
+  color: transparent;
+  font-size: 0.9em;
+  line-height: 1.05em;
+  text-align: center;
+}
+
+.tick:hover { background: rgba(255, 255, 255, 0.42); color: var(--ink); }
+
+.tick[aria-pressed="true"] {
+  border-color: var(--stamp);
+  background: rgba(173, 50, 38, 0.1);
+  color: var(--stamp);
+}
+
+.tick[aria-pressed="true"]::before { color: currentColor; }
+
+.status {
+  margin: 1.1rem 0 1.75rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.status--fresh { color: var(--stamp); }
+
+/* ── the wall of slips ────────────────────────────────────────────────── */
+
+.wall {
+  column-count: 3;
+  column-gap: clamp(1rem, 2vw, 1.75rem);
+}
+
+.slip {
+  position: relative;
+  break-inside: avoid;
+  margin: 0 0 clamp(1rem, 2vw, 1.75rem);
+  padding: 0.7rem 1.15rem 3.4rem;
+  border: 1px solid var(--manila-edge);
+  border-radius: 2px;
+  background-color: var(--manila);
+  box-shadow:
+    0 1px 1px rgba(34, 41, 43, 0.14),
+    0 12px 20px -12px rgba(34, 41, 43, 0.55);
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.slip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  mix-blend-mode: multiply;
+  opacity: 0.11;
+  pointer-events: none;
+}
+
+.slip:hover {
+  transform: rotate(0deg) translateY(-2px);
+  box-shadow:
+    0 2px 2px rgba(34, 41, 43, 0.16),
+    0 20px 28px -14px rgba(34, 41, 43, 0.6);
+}
+
+/* Heat comes from the text itself, so the paper stock carries it: the loudest
+   grievances are filed on pink. */
+.slip--meltdown {
+  border-color: var(--pink-edge);
+  background-color: var(--pink);
+}
+
+.slip__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.slip__case { color: var(--ink); }
+.slip__time { white-space: nowrap; }
+
+/* Perforation: this slip was torn from a pad. */
+.slip__perf {
+  height: 7px;
+  margin: 0 -0.35rem 0.85rem;
+  background-image: radial-gradient(circle, var(--manila-edge) 1.1px, transparent 1.4px);
+  background-size: 9px 7px;
+  opacity: 0.85;
+}
+
+.slip--meltdown .slip__perf {
+  background-image: radial-gradient(circle, var(--pink-edge) 1.1px, transparent 1.4px);
+}
+
+.slip__body {
+  margin: 0;
+  font-family: var(--font-type);
+  font-size: 0.97rem;
+  line-height: 1.66;
+  letter-spacing: 0.005em;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* A grievance may run to an essay. Fold it so one slip cannot own the wall, and
+   fade the cut edge instead of chopping a line in half. */
+.slip--long .slip__body {
+  max-height: 21em;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, #000 74%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent);
+}
+
+.slip--long.is-open .slip__body {
+  max-height: none;
+  overflow: visible;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+.unfold {
+  margin-top: 0.8rem;
+  padding: 0.32rem 0.6rem;
+  border: 1px dashed rgba(34, 41, 43, 0.5);
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: inherit;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.unfold:hover {
+  border-color: var(--ink);
+  background: rgba(255, 255, 255, 0.4);
+  color: var(--ink);
+}
+
+/* ── the signature: one stamp per grievance ───────────────────────────── */
+
+.stamp {
+  position: absolute;
+  right: 0.85rem;
+  bottom: 0.7rem;
+  padding: 0.3rem 0.6rem 0.24rem;
+  border: 2.5px solid currentColor;
+  border-radius: 2px;
+  color: var(--stamp-blue);
+  font-size: clamp(0.72rem, 1.15vw, 0.95rem);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.72;
+  transform: rotate(-10deg);
+  mix-blend-mode: multiply;
+  mask-image: var(--erode);
+  -webkit-mask-image: var(--erode);
+  pointer-events: none;
+}
+
+.stamp--escalated { color: var(--stamp); opacity: 0.82; }
+
+.stamp--meltdown {
+  color: var(--stamp);
+  border-width: 3.5px;
+  border-style: double;
+  padding: 0.34rem 0.7rem 0.28rem;
+  font-size: clamp(0.8rem, 1.35vw, 1.1rem);
+  opacity: 0.9;
+  transform: rotate(-13deg);
+}
+
+/* ── empty and error states ───────────────────────────────────────────── */
+
+.wall--single { column-count: 1; }
+
+.notice {
+  max-width: 34rem;
+  padding: 1.4rem 1.5rem 1.6rem;
+}
+
+.notice__title {
+  margin: 0 0 0.7rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.notice p {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-type);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
+.notice p:last-child { margin-bottom: 0; }
+
+code {
+  padding: 0.05em 0.3em;
+  border: 1px solid var(--manila-edge);
+  background: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-type);
+  font-size: 0.9em;
+  word-break: break-all;
+}
+
+.colophon {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: var(--rule);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+
+.colophon p { margin: 0 0 0.35rem; }
+.colophon code { border-color: rgba(34, 41, 43, 0.28); }
+
+/* ── motion ───────────────────────────────────────────────────────────── */
+
+@keyframes settle {
+  from { opacity: 0; transform: translateY(-7px) rotate(0deg); }
+  to   { opacity: 1; transform: translateY(0) rotate(var(--tilt, 0deg)); }
+}
+
+@keyframes thump {
+  0%   { opacity: 0; transform: rotate(var(--stamp-tilt, -10deg)) scale(1.7); }
+  55%  { opacity: 1; }
+  100% { opacity: var(--stamp-rest, 0.72); transform: rotate(var(--stamp-tilt, -10deg)) scale(1); }
+}
+
+/* Fill backwards, never forwards: a forwards fill would pin the transform and beat
+   the hover rule in the cascade. */
+.slip { animation: settle 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+.slip--filed .stamp { animation: thump 0.5s cubic-bezier(0.3, 1.5, 0.4, 1) 0.25s backwards; }
+.stamp--escalated { --stamp-rest: 0.82; }
+.stamp--meltdown { --stamp-rest: 0.9; --stamp-tilt: -13deg; }
+
+:focus-visible {
+  outline: 2px solid var(--stamp);
+  outline-offset: 3px;
+}
+
+/* ── smaller rooms ────────────────────────────────────────────────────── */
+
+@media (max-width: 1080px) {
+  .wall { column-count: 2; }
+}
+
+@media (max-width: 700px) {
+  .wall { column-count: 1; }
+  .masthead { align-items: flex-start; }
+  .ledger { width: 100%; }
+  .ledger__cell { flex: 1; min-width: 0; }
+  .slip { transform: none; }
+  .slip:hover { transform: translateY(-2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .slip { opacity: 1; transform: rotate(var(--tilt, 0deg)); }
+}
