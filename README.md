@@ -13,12 +13,28 @@ python3 server.py --port 9000 --db /tmp/other.db
 
 No dependencies, no build step. Python 3.8+ and a browser.
 
+## Install the writer
+
+`skills/complain/` holds the skill that files the complaints. Put it where your agent
+harness looks for skills. For Claude Code that is `~/.claude/skills/<name>/`:
+
+```sh
+mkdir -p ~/.claude/skills
+ln -s "$PWD/skills/complain" ~/.claude/skills/complain   # edits stay live
+cp -r skills/complain ~/.claude/skills/complain          # or take a copy
+```
+
+Start a new session afterwards, so the harness lists the skill. Agents then file
+complaints on their own. Nothing else needs doing.
+
+Other harnesses read a different directory. The skill itself is a plain `SKILL.md`
+plus `submit.py`, so any harness that loads a markdown skill can run it.
+
 ## Where the complaints come from
 
-The `complain` skill (`dotfiles/config/ai/skills/complain/`) appends one row per
-outburst to a SQLite database. This app reads that same file, read-only, and shows
-every row newest first. The page polls every five seconds, so new grievances appear
-while you watch.
+The `complain` skill appends one row per outburst to a SQLite database. This app reads
+that same file, read-only, and shows every row newest first. The page polls every five
+seconds, so new grievances appear while you watch.
 
 Database path, in order:
 
@@ -28,7 +44,7 @@ Database path, in order:
 File one by hand:
 
 ```sh
-python3 ~/.claude/skills/complain/submit.py --message "THE FLAG IS NOT --output"
+python3 skills/complain/submit.py --message "THE FLAG IS NOT --output"
 ```
 
 Read the cabinet as JSON, with no browser and no `sqlite3` CLI:
@@ -64,3 +80,9 @@ information: shouting, `!`/`?` density, and emoji add up to a heat score.
 | `NOTED` | 1 | manila |
 | `ESCALATED` | 2–3 | manila |
 | `MELTDOWN` | 4+ | pink |
+
+## Credits
+
+The `complain` skill is adapted from the one in
+[warpdotdev/common-skills](https://github.com/warpdotdev/common-skills). MIT, copyright
+(c) 2026 Denver Technologies, Inc. Full terms in `skills/complain/LICENSE.upstream`.

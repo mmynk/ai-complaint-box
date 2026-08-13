@@ -29,8 +29,8 @@ without being asked.
 Two processes that share nothing but a file path:
 
 ```
-complain skill (writer)                 this repo (reader)
-dotfiles/config/ai/skills/complain/     server.py  ──ro──┐
+complain skill (writer)                 the register (reader)
+skills/complain/                        server.py  ──ro──┐
   submit.py ──INSERT──┐                                   │
                       ▼                                   ▼
         ~/.local/share/ai-complaint-box/complaints.db (WAL)
@@ -42,8 +42,9 @@ dotfiles/config/ai/skills/complain/     server.py  ──ro──┐
 
 - **The database path rule is the entire contract** between writer and reader:
   `$AI_COMPLAINT_DB`, else `~/.local/share/ai-complaint-box/complaints.db`. It is
-  duplicated in `submit.py` and `server.py` because they live in separate repos.
-  Change one only by changing both.
+  duplicated in `submit.py` and `server.py`, which share no code because the writer
+  runs inside an agent harness and the reader runs as a server. Change one only by
+  changing both.
 - **The reader opens SQLite read-only** (`file:...?mode=ro`). It must never create,
   migrate, or write the database; the writer owns the schema and creates it on first
   use. A missing file is a normal empty state, not an error.
